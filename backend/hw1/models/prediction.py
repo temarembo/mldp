@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PredictionRequest(BaseModel):
@@ -10,4 +10,4 @@ class PredictionRequest(BaseModel):
     name: str
     description: str
     category: int
-    images_qty: int
+    images_qty: int = Field(ge=0)

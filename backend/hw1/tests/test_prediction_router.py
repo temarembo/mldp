@@ -75,6 +75,24 @@ def test_predict_returns_400_when_field_has_wrong_type(
     )
 
 
+@pytest.mark.parametrize("is_verified_seller", [False, True])
+def test_predict_returns_400_when_images_qty_is_negative(
+    client, valid_payload, repository, is_verified_seller
+):
+    valid_payload["images_qty"] = -1
+    valid_payload["is_verified_seller"] = is_verified_seller
+
+    response = client.post("/predict", json=valid_payload)
+
+    assert response.status_code == 400
+    assert any(
+        error["loc"] == ["body", "images_qty"]
+        and error["type"] == "greater_than_equal"
+        for error in response.json()["detail"]
+    )
+    assert repository.get(item_id=valid_payload["item_id"]) is None
+
+
 def test_predict_returns_400_when_json_is_malformed(client):
     response = client.post(
         "/predict",
